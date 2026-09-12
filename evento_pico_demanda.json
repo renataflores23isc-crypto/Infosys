@@ -1,0 +1,302 @@
+[
+    {
+        "pedido_id": 501,
+        "origen": [
+            25.6682,
+            -100.2993
+        ],
+        "destino": [
+            25.6471,
+            -100.2857
+        ],
+        "pago_mxn": 189.63,
+        "distancia_km": 3.1,
+        "tiempo_est_min": 34,
+        "ventana_aceptacion_seg": 15
+    },
+    {
+        "pedido_id": 502,
+        "origen": [
+            25.6741,
+            -100.3023
+        ],
+        "destino": [
+            25.6322,
+            -100.3066
+        ],
+        "pago_mxn": 210.56,
+        "distancia_km": 4.8,
+        "tiempo_est_min": 44,
+        "ventana_aceptacion_seg": 15
+    },
+    {
+        "pedido_id": 503,
+        "origen": [
+            25.6694,
+            -100.3014
+        ],
+        "destino": [
+            25.6666,
+            -100.3091
+        ],
+        "pago_mxn": 239.29,
+        "distancia_km": 3.7,
+        "tiempo_est_min": 33,
+        "ventana_aceptacion_seg": 15
+    },
+    {
+        "pedido_id": 504,
+        "origen": [
+            25.669,
+            -100.2963
+        ],
+        "destino": [
+            25.6519,
+            -100.2962
+        ],
+        "pago_mxn": 297.79,
+        "distancia_km": 2.2,
+        "tiempo_est_min": 22,
+        "ventana_aceptacion_seg": 15
+    },
+    {
+        "pedido_id": 505,
+        "origen": [
+            25.6692,
+            -100.2963
+        ],
+        "destino": [
+            25.6331,
+            -100.271
+        ],
+        "pago_mxn": 204.23,
+        "distancia_km": 2.2,
+        "tiempo_est_min": 29,
+        "ventana_aceptacion_seg": 15
+    },
+    {
+        "pedido_id": 506,
+        "origen": [
+            25.6725,
+            -100.3039
+        ],
+        "destino": [
+            25.6545,
+            -100.2702
+        ],
+        "pago_mxn": 168.24,
+        "distancia_km": 3.4,
+        "tiempo_est_min": 20,
+        "ventana_aceptacion_seg": 15
+    },
+    {
+        "pedido_id": 507,
+        "origen": [
+            25.6742,
+            -100.2992
+        ],
+        "destino": [
+            25.6594,
+            -100.2832
+        ],
+        "pago_mxn": 175.08,
+        "distancia_km": 2.7,
+        "tiempo_est_min": 21,
+        "ventana_aceptacion_seg": 15
+    },
+    {
+        "pedido_id": 508,
+        "origen": [
+            25.6727,
+            -100.3032
+        ],
+        "destino": [
+            25.633,
+            -100.2874
+        ],
+        "pago_mxn": 257.49,
+        "distancia_km": 2.8,
+        "tiempo_est_min": 41,
+        "ventana_aceptacion_seg": 15
+    },
+    {
+        "pedido_id": 509,
+        "origen": [
+            25.6651,
+            -100.3025
+        ],
+        "destino": [
+            25.643,
+            -100.301
+        ],
+        "pago_mxn": 163.45,
+        "distancia_km": 2.2,
+        "tiempo_est_min": 43,
+        "ventana_aceptacion_seg": 15
+    },
+    {
+        "pedido_id": 510,
+        "origen": [
+            25.6698,
+            -100.301
+        ],
+        "destino": [
+            25.6683,
+            -100.2786
+        ],
+        "pago_mxn": 209.04,
+        "distancia_km": 4.4,
+        "tiempo_est_min": 28,
+        "ventana_aceptacion_seg": 15
+    },
+    {
+        "pedido_id": 511,
+        "origen": [
+            25.6705,
+            -100.2977
+        ],
+        "destino": [
+            25.633,
+            -100.2824
+        ],
+        "pago_mxn": 208.77,
+        "distancia_km": 4.4,
+        "tiempo_est_min": 19,
+        "ventana_aceptacion_seg": 15
+    },
+    {
+        "pedido_id": 512,
+        "origen": [
+            25.6667,
+            -100.2968
+        ],
+        "destino": [
+            25.6365,
+            -100.2873
+        ],
+        "pago_mxn": 194.1,
+        "distancia_km": 4.5,
+        "tiempo_est_min": 16,
+        "ventana_aceptacion_seg": 15
+    },
+    {
+        "pedido_id": 513,
+        "origen": [
+            25.6705,
+            -100.3025
+        ],
+        "destino": [
+            25.6321,
+            -100.2895
+        ],
+        "pago_mxn": 195.23,
+        "distancia_km": 3.3,
+        "tiempo_est_min": 30,
+        "ventana_aceptacion_seg": 15
+    },
+    {
+        "pedido_id": 514,
+        "origen": [
+            25.6716,
+            -100.3013
+        ],
+        "destino": [
+            25.6348,
+            -100.3088
+        ],
+        "pago_mxn": 271.65,
+        "distancia_km": 2.3,
+        "tiempo_est_min": 36,
+        "ventana_aceptacion_seg": 15
+    },
+    {
+        "pedido_id": 515,
+        "origen": [
+            25.6689,
+            -100.3041
+        ],
+        "destino": [
+            25.6678,
+            -100.2803
+        ],
+        "pago_mxn": 190.03,
+        "distancia_km": 3.4,
+        "tiempo_est_min": 15,
+        "ventana_aceptacion_seg": 15
+    },
+    {
+        "pedido_id": 516,
+        "origen": [
+            25.6726,
+            -100.2979
+        ],
+        "destino": [
+            25.6488,
+            -100.3009
+        ],
+        "pago_mxn": 174.52,
+        "distancia_km": 4.5,
+        "tiempo_est_min": 45,
+        "ventana_aceptacion_seg": 15
+    },
+    {
+        "pedido_id": 517,
+        "origen": [
+            25.6663,
+            -100.3007
+        ],
+        "destino": [
+            25.669,
+            -100.2721
+        ],
+        "pago_mxn": 167.38,
+        "distancia_km": 3.4,
+        "tiempo_est_min": 36,
+        "ventana_aceptacion_seg": 15
+    },
+    {
+        "pedido_id": 518,
+        "origen": [
+            25.6665,
+            -100.3035
+        ],
+        "destino": [
+            25.6677,
+            -100.279
+        ],
+        "pago_mxn": 185.44,
+        "distancia_km": 4.9,
+        "tiempo_est_min": 27,
+        "ventana_aceptacion_seg": 15
+    },
+    {
+        "pedido_id": 519,
+        "origen": [
+            25.6724,
+            -100.3022
+        ],
+        "destino": [
+            25.6528,
+            -100.2794
+        ],
+        "pago_mxn": 169.32,
+        "distancia_km": 3.6,
+        "tiempo_est_min": 26,
+        "ventana_aceptacion_seg": 15
+    },
+    {
+        "pedido_id": 520,
+        "origen": [
+            25.6704,
+            -100.3031
+        ],
+        "destino": [
+            25.6381,
+            -100.2905
+        ],
+        "pago_mxn": 242.56,
+        "distancia_km": 2.8,
+        "tiempo_est_min": 28,
+        "ventana_aceptacion_seg": 15
+    }
+]
