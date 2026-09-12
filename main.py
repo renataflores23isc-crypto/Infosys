@@ -30,6 +30,14 @@ for pedido in pedidos_disponibles:
 print("==================================================")
 print("              RESUMEN FINAL DEL TURNO             ")
 print("==================================================")
-print(f"🔴 Baseline Total:  ${baseline.ganancias_acumuladas} MXN en {baseline.tiempo_acumulado_min} min")
-print(f"🟢 Agente IA Total: ${agente_ia.ganancias_acumuladas} MXN en {agente_ia.tiempo_acumulado_min} min")
-print(f"💡 Diferencia a favor de la IA: ${round(agente_ia.ganancias_acumuladas - baseline.ganancias_acumuladas, 2)} MXN")
+
+# Convertir minutos a horas para calcular tasa horaria
+horas_b = baseline.tiempo_acumulado_min / 60 if baseline.tiempo_acumulado_min > 0 else 1
+horas_ia = agente_ia.tiempo_acumulado_min / 60 if agente_ia.tiempo_acumulado_min > 0 else 1
+
+rate_b = round(baseline.ganancias_acumuladas / horas_b, 2)
+rate_ia = round(agente_ia.ganancias_acumuladas / horas_ia, 2)
+
+print(f"🔴 Baseline Total:  ${round(baseline.ganancias_acumuladas, 2)} MXN en {round(baseline.tiempo_acumulado_min, 1)} min ({rate_b} MXN/hora)")
+print(f"🟢 Agente IA Total: ${round(agente_ia.ganancias_acumuladas, 2)} MXN en {round(agente_ia.tiempo_acumulado_min, 1)} min ({rate_ia} MXN/hora)")
+print(f"⚡ Eficiencia Horaria: La IA ganó +${round(rate_ia - rate_b, 2)} MXN por hora trabajando {round(baseline.tiempo_acumulado_min - agente_ia.tiempo_acumulado_min, 1)} min menos.")
