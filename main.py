@@ -50,7 +50,7 @@ else:
     archivo_json = "pedidos_monterrey.json"
 
 # -----------------------------------------------------------------------------
-# 4. TABLERO DE MÉTRICAS (MANTENIENDO TU DISEÑO)
+# 4. TABLERO DE MÉTRICAS VISUALES
 # -----------------------------------------------------------------------------
 col_base, col_ia = st.columns(2)
 
@@ -96,7 +96,7 @@ with col_llm:
         st.info("Haz clic en **'🚀 Iniciar Simulación en Vivo'** para comenzar la evaluación.")
 
 # -----------------------------------------------------------------------------
-# 5. CICLO PRINCIPAL DE SIMULACIÓN
+# 5. CICLO PRINCIPAL DE SIMULACIÓN (AMBOS CONTADORES FUNCIONALES)
 # -----------------------------------------------------------------------------
 if btn_ejecutar:
     try:
@@ -109,44 +109,56 @@ if btn_ejecutar:
     baseline = AgenteBaseline(costo_gasolina_km=costo_gasolina)
     agente_ia = AgenteIA(umbral_minimo_mxn_min=umbral_min, costo_gasolina_km=costo_gasolina)
 
-    # Variables de control
     km_b_acumulados = 0.0
-    pedidos_ia_aceptados = 0
     puntos_ruta = [{'lat': 25.6866, 'lon': -100.3161}]
 
-    # Usamos enumerate para que 'i' cuente EXACTAMENTE los pedidos recibidos
     for i, pedido in enumerate(pedidos_disponibles, 1):
         time.sleep(velocidad)
 
         res_b = baseline.procesar_oferta(pedido, factor_trafico_actual, factor_tarifa_actual)
         res_ia = agente_ia.procesar_oferta(pedido, factor_trafico_actual, factor_tarifa_actual)
 
-        # Distancia del Baseline acumulada paso a paso
+        # ---------------------------------------------------------------------
+        # ACTUALIZAR METRICAS BASELINE (CONTADOR 1)
+        # ---------------------------------------------------------------------
         km_b_acumulados += float(pedido.get('distancia_km', 0.0))
 
-        # --- ACTUALIZACIÓN EN TIEMPO REAL BASELINE ---
         m_base_g.metric("Ganancia Acumulada", f"${round(baseline.ganancias_acumuladas, 2)} MXN")
-        m_base_p.metric("Pedidos Procesados", f"{i}")  # <-- AQUÍ SE CORRIGE EL 0 A 1, 2, 3...
+        m_base_p.metric("Pedidos Procesados", f"{i}")  # Muestra 1, 2, 3... 10
         m_base_km.metric("Distancia Recorrida", f"{round(km_b_acumulados, 1)} km")
         m_base_t.metric("Tiempo Usado", f"{round(baseline.tiempo_acumulado_min, 1)} min")
 
-        # --- ACTUALIZACIÓN EN TIEMPO REAL AGENTE IA ---
-        decision_ia = res_ia.get('decisión', res_ia.get('decision', 'N/A'))
-        razon_ia = res_ia.get('razón', res_ia.get('razon', 'Sin justificación.'))
-        
-        if decision_ia in ["Aceptar", "ACEPTADO", "aceptado"]:
-            pedidos_ia_aceptados += 1
+        # ---------------------------------------------------------------------
+        # ACTUALIZAR METRICAS AGENTE IA (CONTADOR 2 MULTI-DETECCIÓN)
+        # ---------------------------------------------------------------------
+        # 1. Extraer decisión de la IA sin importar si la llave es 'decisión' o 'decision'
+        decision_ia_str = str(res_ia.get('decisión', res_ia.get('decision', ''))).lower()
+        es_aceptado = "acept" in decision_ia_str
 
-        km_ia = res_ia.get('km_acumulados', getattr(agente_ia, 'km_acumulados', getattr(agente_ia, 'km_totales', 0.0)))
+        # 2. Extraer conteo de pedidos aceptados por la IA de forma ultra-flexible
+        conteo_ia_val = 0
+        if hasattr(agente_ia, 'pedidos_aceptados'):
+            attr_val = getattr(agente_ia, 'pedidos_aceptados')
+            conteo_ia_val = len(attr_val) if isinstance(attr_val, list) else int(attr_val)
+        elif 'pedidos_aceptados' in res_ia:
+            res_val = res_ia['pedidos_aceptados']
+            conteo_ia_val = len(res_val) if isinstance(res_val, list) else int(res_val)
+
+        # 3. Extraer km del agente IA de forma ultra-flexible
+        km_ia_val = res_ia.get('km_acumulados', getattr(agente_ia, 'km_acumulados', getattr(agente_ia, 'km_totales', 0.0)))
 
         m_ia_g.metric("Ganancia Acumulada", f"${round(agente_ia.ganancias_acumuladas, 2)} MXN")
-        m_ia_p.metric("Pedidos Procesados", f"{pedidos_ia_aceptados}")
-        m_ia_km.metric("Distancia Recorrida", f"{round(float(km_ia), 1)} km")
+        m_ia_p.metric("Pedidos Procesados", f"{conteo_ia_val}") # Muestra los aceptados reales (ej. 7)
+        m_ia_km.metric("Distancia Recorrida", f"{round(float(km_ia_val), 1)} km")
         m_ia_t.metric("Tiempo Usado", f"{round(agente_ia.tiempo_acumulado_min, 1)} min")
 
-        # --- ACTUALIZACIÓN DE INTERFAZ / EXPLICABILIDAD ---
+        # ---------------------------------------------------------------------
+        # DESPLIEGUE EXPLICATIVO Y MAPA
+        # ---------------------------------------------------------------------
+        razon_ia = res_ia.get('razón', res_ia.get('razon', 'Evaluado por algoritmo de rentabilidad.'))
+
         with llm_box:
-            if decision_ia in ["Aceptar", "ACEPTADO", "aceptado"]:
+            if es_aceptado:
                 if 'origen' in pedido and 'destino' in pedido:
                     puntos_ruta.append({'lat': pedido['origen'][0], 'lon': pedido['origen'][1]})
                     puntos_ruta.append({'lat': pedido['destino'][0], 'lon': pedido['destino'][1]})
