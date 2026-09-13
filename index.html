@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>El Repartidor — Agente IA para Conductores</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-main: #0a0d11;
+      --bg-panel: #11161d;
+      --bg-card: #161c24;
+      --bg-card-glow: #131c23;
+      --border-color: #212b36;
+      --accent-green: #00e676;
+      --accent-green-dark: #00a854;
+      --accent-green-bg: rgba(0, 230, 118, 0.08);
+      --accent-red: #ff3366;
+      --accent-red-bg: rgba(255, 51, 102, 0.08);
+      --accent-blue: #00b0ff;
+      --text-main: #ffffff;
+      --text-muted: #8e9aab;
+      --text-dim: #5c6979;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      padding: 24px;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .dashboard-container {
+      width: 100%;
+      max-width: 1400px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* HEADER */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 4px;
+    }
+
+    .header-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .header-badges {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .badge-live {
+      background: rgba(0, 230, 118, 0.12);
+      color: var(--accent-green);
+      border: 1px solid rgba(0, 230, 118, 0.3);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge-live::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      background-color: var(--accent-green);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent-green);
+    }
+
+    .badge-track {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    /* MAIN LAYOUT GRID */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 20px;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .sidebar-section-title {
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sidebar-description {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .control-label-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .control-value {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent-blue);
+      height: 4px;
+      background: #252d38;
+      border-radius: 2px;
+      outline: none;
+    }
+
+    .btn-primary {
+      background: var(--accent-green);
+      color: #000000;
+      border: none;
+      padding: 14px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 0 16px rgba(0, 230, 118, 0.25);
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-green-dark);
+      color: #ffffff;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .directive-box {
+      margin-top: auto;
+      border-top: 1px solid var(--border-color);
+      padding-top: 16px;
+    }
+
+    .directive-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .directive-text {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* RIGHT CONTENT */
+    .content-area {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* METRICS COMPARISON HEADER */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .card-baseline {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 20px;
+    }
+
+    .card-ia {
+      background: var(--bg-card-glow);
+      border: 1px solid var(--accent-green-dark);
+      box-shadow: 0 0 20px rgba(0, 230, 118, 0.12);
+      border-radius: 14px;
+      padding: 20px;
+      position: relative;
+    }
+
+    .card-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .card-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .badge-recommended {
+      background: rgba(0, 230, 118, 0.15);
+      color: var(--accent-green);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-diff {
+      background: rgba(0, 230, 118, 0.15);
+      color: var(--accent-green);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    .strategy-tag {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .metric-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .metric-label {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .metric-val {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .metric-val.green {
+      color: var(--accent-green);
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    /* LOWER SECTION GRID: MAP & REASONING */
+    .lower-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 20px;
+    }
+
+    .panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .map-legend {
+      display: flex;
+      gap: 12px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .dot.green { background: var(--accent-green); }
+    .dot.blue { background: var(--accent-blue); }
+
+    /* MOCK MAP CONTAINER */
+    .map-container {
+      width: 100%;
+      height: 380px;
+      background: #080b0e;
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* SVG MAP BACKGROUND MOCK */
+    .map-svg {
+      width: 100%;
+      height: 100%;
+      opacity: 0.6;
+    }
+
+    /* MAP OVERLAY PINS */
+    .map-pin {
+      position: absolute;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: #000;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.8);
+    }
+
+    .pin-p1 { top: 48%; left: 30%; background: var(--accent-green); }
+    .pin-p2 { top: 38%; left: 40%; background: var(--accent-green); }
+    .pin-d1 { top: 58%; left: 52%; background: var(--accent-blue); color: #fff; }
+
+    /* MAP STREET LABELS */
+    .street-label {
+      position: absolute;
+      font-size: 9px;
+      font-weight: 600;
+      color: #00b0ff;
+      letter-spacing: 0.5px;
+      opacity: 0.7;
+      transform: rotate(-15deg);
+    }
+
+    .label-const { top: 46%; left: 47%; }
+    .label-morones { top: 64%; left: 54%; }
+
+    .map-controls {
+      position: absolute;
+      bottom: 14px;
+      right: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .map-btn {
+      width: 26px;
+      height: 26px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* REASONING FEED */
+    .model-tag {
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .feed-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .feed-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .feed-card.accepted {
+      border-left: 3px solid var(--accent-green);
+    }
+
+    .feed-card.rejected {
+      border-left: 3px solid var(--accent-red);
+    }
+
+    .feed-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .feed-order-id {
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .feed-status {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    .feed-status.accepted {
+      background: var(--accent-green-bg);
+      color: var(--accent-green);
+    }
+
+    .feed-status.rejected {
+      background: var(--accent-red-bg);
+      color: var(--accent-red);
+    }
+
+    .feed-price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .feed-price-label {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .feed-price-val {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .feed-price-val.green { color: var(--accent-green); }
+    .feed-price-val.red { color: var(--accent-red); }
+
+    .feed-quote {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-style: italic;
+      line-height: 1.4;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 8px 10px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="dashboard-container">
+    
+    <!-- HEADER -->
+    <header class="header">
+      <div class="header-title">
+        El Repartidor — Agente IA para Conductores
+      </div>
+      <div class="header-badges">
+        <div class="badge-live">Turno en Vivo Monterrey</div>
+        <div class="badge-track">Infosys Track 3</div>
+      </div>
+    </header>
+
+    <!-- MAIN GRID -->
+    <div class="main-grid">
+
+      <!-- LEFT SIDEBAR -->
+      <aside class="sidebar">
+        <div class="sidebar-section-title">
+          <span>⚡</span> Eventos del Turno en Vivo
+        </div>
+        
+        <p class="sidebar-description">
+          Modifica las condiciones climáticas y del mercado en tiempo real para evaluar al Agente IA.
+        </p>
+
+        <div class="control-group">
+          <div class="control-label-row">
+            <span>Tráfico / Lluvia</span>
+            <span class="control-value">1.0x</span>
+          </div>
+          <input type="range" min="1.0" max="2.0" step="0.1" value="1.0">
+        </div>
+
+        <div class="control-group">
+          <div class="control-label-row">
+            <span>Tarifa Dinámica</span>
+            <span class="control-value">1.0x</span>
+          </div>
+          <input type="range" min="1.0" max="2.0" step="0.1" value="1.0">
+        </div>
+
+        <button class="btn-primary">
+          <span>►</span> Procesar Siguiente Pedido
+        </button>
+
+        <button class="btn-secondary">
+          <span>🔄</span> Reiniciar Turno
+        </button>
+
+        <div class="directive-box">
+          <div class="directive-title">Directiva del Sistema</div>
+          <div class="directive-text">
+            Maximizar el ingreso neto reduciendo tiempos de espera y trayectos sin carga en el área metropolitana de Monterrey.
+          </div>
+        </div>
+      </aside>
+
+      <!-- RIGHT CONTENT -->
+      <main class="content-area">
+
+        <!-- METRICS COMPARISON -->
+        <div class="metrics-grid">
+          
+          <!-- BASELINE CARD -->
+          <div class="card-baseline">
+            <div class="card-header-row">
+              <div class="card-title">Agente Baseline</div>
+              <div class="strategy-tag">Estrategia Golosa</div>
+            </div>
+            
+            <div class="metric-row">
+              <span class="metric-label">Ganancia Horaria</span>
+              <span class="metric-val">$190.87 MXN/hr</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Total Ganado</span>
+              <span class="metric-val">$339.74 MXN</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Tiempo Activo</span>
+              <span class="metric-val">106 min</span>
+            </div>
+          </div>
+
+          <!-- IA CARD -->
+          <div class="card-ia">
+            <div class="card-header-row">
+              <div class="card-title-group">
+                <span class="card-title">Agente IA</span>
+                <span class="badge-recommended">RECOMENDADO</span>
+              </div>
+              <div class="badge-diff">+$190.54 MXN/hr vs Baseline</div>
+            </div>
+
+            <div class="metric-row">
+              <span class="metric-label">Ganancia Horaria</span>
+              <span class="metric-val green">$381.41 MXN/hr</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Total Ganado</span>
+              <span class="metric-val">$259.36 MXN</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Tiempo Activo</span>
+              <span class="metric-val">40.8 min</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- LOWER SECTION -->
+        <div class="lower-grid">
+          
+          <!-- MAP PANEL -->
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title">
+                Mapa de Ruta en Vivo — Monterrey
+              </div>
+              <div class="map-legend">
+                <div class="legend-item"><span class="dot green"></span> Recolección (Pick)</div>
+                <div class="legend-item"><span class="dot blue"></span> Entrega (Drop)</div>
+              </div>
+            </div>
+
+            <div class="map-container">
+              <!-- DARK VECTOR MAP MOCK -->
+              <svg class="map-svg" viewBox="0 0 600 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- River Morones/Constitución -->
+                <path d="M-10 220 Q 200 200, 320 230 T 610 210" stroke="#0d2b45" stroke-width="14"/>
+                <path d="M-10 220 Q 200 200, 320 230 T 610 210" stroke="#124068" stroke-width="4"/>
+                
+                <!-- Grid Roads -->
+                <path d="M 80 -10 L 80 390" stroke="#161f2b" stroke-width="1"/>
+                <path d="M 180 -10 L 180 390" stroke="#1c2838" stroke-width="1.5"/>
+                <path d="M 310 -10 L 310 390" stroke="#161f2b" stroke-width="1"/>
+                <path d="M 450 -10 L 450 390" stroke="#1c2838" stroke-width="1.5"/>
+                
+                <path d="M -10 100 L 610 100" stroke="#161f2b" stroke-width="1"/>
+                <path d="M -10 170 L 610 170" stroke="#1c2838" stroke-width="2"/>
+                <path d="M -10 280 L 610 280" stroke="#161f2b" stroke-width="1"/>
+
+                <!-- Route lines -->
+                <line x1="180" y1="195" x2="310" y2="220" stroke="#00e676" stroke-width="2" stroke-dasharray="4 4" />
+                <line x1="240" y1="145" x2="310" y2="220" stroke="#00e676" stroke-width="2" stroke-dasharray="4 4" />
+                <line x1="180" y1="195" x2="310" y2="220" stroke="#00b0ff" stroke-width="2" stroke-dasharray="4 4" />
+              </svg>
+
+              <!-- MAP PINS & LABELS -->
+              <div class="map-pin pin-p1">P1</div>
+              <div class="map-pin pin-p2">P2</div>
+              <div class="map-pin pin-d1">D1</div>
+
+              <div class="street-label label-const">AV. CONSTITUCIÓN</div>
+              <div class="street-label label-morones" style="top: 65%; left: 48%;">AV. MORONES PRIETO</div>
+
+              <div class="map-controls">
+                <div class="map-btn">+</div>
+                <div class="map-btn">-</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- REASONING PANEL -->
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title">
+                <span>🤖</span> Razonamiento del LLM
+              </div>
+              <div class="model-tag">Llama-3-Driven</div>
+            </div>
+
+            <div class="feed-list">
+              
+              <!-- ORDER 102 -->
+              <div class="feed-card accepted">
+                <div class="feed-header">
+                  <div class="feed-order-id">
+                    <span class="dot green"></span> Pedido #102
+                  </div>
+                  <div class="feed-status accepted">ACEPTADO</div>
+                </div>
+                <div class="feed-price-row">
+                  <span class="feed-price-label">Monto del Servicio</span>
+                  <span class="feed-price-val green">$134.44 MXN</span>
+                </div>
+                <div class="feed-quote">
+                  "Alta rentabilidad ($7.46 MXN/min). Añadido a la ruta óptima."
+                </div>
+              </div>
+
+              <!-- ORDER 103 -->
+              <div class="feed-card rejected">
+                <div class="feed-header">
+                  <div class="feed-order-id">
+                    <span class="dot red" style="background: var(--accent-red);"></span> Pedido #103
+                  </div>
+                  <div class="feed-status rejected">RECHAZADO</div>
+                </div>
+                <div class="feed-price-row">
+                  <span class="feed-price-label">Monto del Servicio</span>
+                  <span class="feed-price-val red">$94.14 MXN</span>
+                </div>
+                <div class="feed-quote">
+                  "Rentabilidad baja ($2.0 MXN/min vs umbral $3.5 MXN/min por tráfico)."
+                </div>
+              </div>
+
+              <!-- ORDER 101 -->
+              <div class="feed-card accepted">
+                <div class="feed-header">
+                  <div class="feed-order-id">
+                    <span class="dot green"></span> Pedido #101
+                  </div>
+                  <div class="feed-status accepted">ACEPTADO</div>
+                </div>
+                <div class="feed-price-row">
+                  <span class="feed-price-label">Monto del Servicio</span>
+                  <span class="feed-price-val green">$120.88 MXN</span>
+                </div>
+                <div class="feed-quote">
+                  "Recolección adyacente a la ruta. Desvío mínimo."
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+      </main>
+
+    </div>
+
+  </div>
+
+</body>
+</html>
