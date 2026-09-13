@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infosys Route Optimizer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0B101D;
+            --panel-bg: #131B2E;
+            --card-bg: #1A243B;
+            --card-border: #263352;
+            --text-primary: #FFFFFF;
+            --text-secondary: #8E9BB0;
+            --text-muted: #54637B;
+            
+            /* Baseline Theme */
+            --baseline-accent: #3A4B6E;
+            
+            /* AI Agent Theme */
+            --ai-accent: #10B981;
+            --ai-glow: rgba(16, 185, 129, 0.15);
+            --ai-border: rgba(16, 185, 129, 0.4);
+            
+            /* Alerts & Badges */
+            --alert-amber-bg: rgba(245, 158, 11, 0.1);
+            --alert-amber-border: #D97706;
+            --alert-amber-text: #FBBF24;
+            --badge-bg: #1E293B;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            padding: 24px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1280px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* --- NAVBAR --- */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--panel-bg);
+            border: 1px solid var(--card-border);
+            padding: 16px 24px;
+            border-radius: 16px;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .avatar-box {
+            width: 44px;
+            height: 44px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--ai-accent);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--ai-accent);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .nav-title h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #FFF;
+        }
+
+        .nav-title p {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .nav-center {
+            display: flex;
+            gap: 12px;
+        }
+
+        .badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--badge-bg);
+            border: 1px solid var(--card-border);
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .badge-amber {
+            background: var(--alert-amber-bg);
+            border-color: var(--alert-amber-border);
+            color: var(--alert-amber-text);
+        }
+
+        .btn-simular {
+            background: var(--ai-accent);
+            color: #052E16;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-simular:hover {
+            opacity: 0.9;
+            box-shadow: 0 0 16px var(--ai-accent);
+        }
+
+        /* --- GRID COMPARATIVO --- */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .column-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .column-card.ai-active {
+            border: 1px solid var(--ai-border);
+            box-shadow: 0 0 24px var(--ai-glow);
+        }
+
+        .column-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pill-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+
+        .pill-baseline {
+            background: rgba(142, 155, 176, 0.1);
+            border: 1px solid var(--text-secondary);
+            color: var(--text-secondary);
+        }
+
+        .pill-ai {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--ai-accent);
+            color: var(--ai-accent);
+        }
+
+        .status-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .status-text.live {
+            color: var(--ai-accent);
+        }
+
+        /* --- METRICS GRID --- */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .metric-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .metric-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
+        }
+
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #FFF;
+        }
+
+        .metric-value-ai {
+            color: var(--ai-accent);
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+        }
+
+        .metric-sub {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* --- GRID MAPS --- */
+        .map-container {
+            background: #090E17;
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            height: 220px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-end;
+            padding: 12px;
+        }
+
+        .map-grid-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .map-footer-text {
+            position: relative;
+            z-index: 2;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* --- BARRA DE MEJORA EN VIVO --- */
+        .banner-mejora {
+            background: var(--panel-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+        }
+
+        .mejora-title {
+            color: var(--text-secondary);
+            line-height: 1.3;
+        }
+
+        .mejora-stats {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .stat-item span {
+            color: var(--text-secondary);
+        }
+
+        .stat-item strong {
+            color: var(--ai-accent);
+            margin-left: 6px;
+        }
+
+        .progress-bar-bg {
+            width: 140px;
+            height: 8px;
+            background: var(--card-bg);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            width: 81.25%;
+            height: 100%;
+            background: var(--ai-accent);
+            box-shadow: 0 0 8px var(--ai-accent);
+            transition: width 0.5s ease-in-out;
+        }
+
+        /* --- PANEL INFERIOR --- */
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 24px;
+        }
+
+        .exp-box {
+            background: rgba(16, 185, 129, 0.03);
+            border: 1px solid var(--ai-border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .exp-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--ai-accent);
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .exp-text {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #E2E8F0;
+        }
+
+        .lists-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .list-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 14px;
+        }
+
+        .list-card h4 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .list-item {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot-green { color: var(--ai-accent); }
+        .dot-red { color: #EF4444; }
+
+        /* --- TABLA EVENTOS --- */
+        .table-eventos {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            margin-top: 12px;
+        }
+
+        .table-eventos th {
+            text-align: left;
+            color: var(--text-muted);
+            padding-bottom: 12px;
+            font-size: 0.7rem;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .table-eventos td {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+        }
+
+        .action-accepted { color: var(--ai-accent); }
+        .action-reroute { color: var(--alert-amber-text); }
+
+        .empty-footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            margin-top: 24px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- NAVBAR -->
+    <header class="navbar">
+        <div class="nav-left">
+            <div class="avatar-box">A</div>
+            <div class="nav-title">
+                <h1>Infosys Route Optimizer</h1>
+                <p>Hackathon Challenge | AI vs FIFO</p>
+            </div>
+        </div>
+        <div class="nav-center">
+            <div class="badge">📍 Monterrey, NL</div>
+            <div class="badge badge-amber">🌧️ Lluvia / Tráfico Alto</div>
+        </div>
+        <button class="btn-simular">▶ Iniciar Simulación</button>
+    </header>
+
+    <!-- GRID COMPARATIVO PRINCIPAL -->
+    <main class="comparison-grid">
+
+        <!-- COLUMNA BASELINE -->
+        <section class="column-card">
+            <div class="column-header">
+                <span class="pill-tag pill-baseline">☵ ESTRATEGIA BASELINE (FIFO)</span>
+                <span class="status-text">Sin IA</span>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Ganancia Total</div>
+                    <div class="metric-value" id="base-ganancia">$320</div>
+                    <div class="metric-sub">MXN esta hora</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Ganancia/Hora</div>
+                    <div class="metric-value" id="base-hora">$106.6</div>
+                    <div class="metric-sub">/h promedio</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Distancia</div>
+                    <div class="metric-value" id="base-distancia">24.5 km</div>
+                    <div class="metric-sub">ruta completa</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Entregas</div>
+                    <div class="metric-value" id="base-pedidos">4 Pedidos</div>
+                    <div class="metric-sub">aceptados FIFO</div>
+                </div>
+            </div>
+
+            <!-- MAPA VECTORIAL BASELINE -->
+            <div class="map-container">
+                <svg class="map-grid-svg" viewBox="0 0 400 200">
+                    <defs>
+                        <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+                            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#1A243B" stroke-width="1"/>
+                        </pattern>
+                    </defs>
+                    <rect width="100%" height="100%" fill="url(#grid)" />
+                    <polyline points="50,150 50,70 140,70 140,100 240,40" fill="none" stroke="#475569" stroke-width="2"/>
+                    <polyline points="140,100 50,70" fill="none" stroke="#334155" stroke-width="1.5" stroke-dasharray="4"/>
+                    <circle cx="50" cy="150" r="6" fill="#090E17" stroke="#94A3B8" stroke-width="2"/>
+                    <text x="47" y="153" fill="#FFF" font-size="8" font-family="monospace">S</text>
+                    <circle cx="140" cy="70" r="5" fill="#090E17" stroke="#94A3B8" stroke-width="2"/>
+                    <circle cx="150" cy="100" r="5" fill="#090E17" stroke="#94A3B8" stroke-width="2"/>
+                    <circle cx="240" cy="40" r="5" fill="#090E17" stroke="#94A3B8" stroke-width="2"/>
+                </svg>
+                <div class="map-footer-text" id="mapa-base-footer">Monterrey Centro · 24.5 km total</div>
+            </div>
+        </section>
+
+        <!-- COLUMNA AGENTE IA -->
+        <section class="column-card ai-active">
+            <div class="column-header">
+                <span class="pill-tag pill-ai">⚡ AGENTE IA INFOSYS</span>
+                <span class="status-text live" id="ai-status">● STANDBY</span>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Ganancia Neta</div>
+                    <div class="metric-value metric-value-ai" id="ai-ganancia">$580</div>
+                    <div class="metric-sub">MXN esta hora</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Ratio Eficiencia</div>
+                    <div class="metric-value metric-value-ai" id="ai-ratio">$4.8/min</div>
+                    <div class="metric-sub">promedio turno</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Distancia</div>
+                    <div class="metric-value metric-value-ai" id="ai-distancia">18.2 km</div>
+                    <div class="metric-sub">optimizado</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Ahorro Gasolina</div>
+                    <div class="metric-value metric-value-ai" id="ai-ahorro">35%</div>
+                    <div class="metric-sub">vs ruta FIFO</div>
+                </div>
+            </div>
+
+            <!-- MAPA VECTORIAL IA -->
+            <div class="map-container">
+                <svg class="map-grid-svg" viewBox="0 0 400 200">
+                    <rect width="100%" height="100%" fill="url(#grid)" />
+                    <path d="M 50,160 Q 100,140 120,130 T 190,90 T 250,50 T 300,40" fill="none" stroke="#10B981" stroke-width="3" stroke-dasharray="6,4"/>
+                    <circle cx="190" cy="90" r="20" fill="rgba(16, 185, 129, 0.05)" stroke="rgba(16, 185, 129, 0.2)" stroke-dasharray="2"/>
+                    <circle cx="250" cy="50" r="16" fill="rgba(16, 185, 129, 0.05)" stroke="rgba(16, 185, 129, 0.2)" stroke-dasharray="2"/>
+                    <circle cx="50" cy="160" r="6" fill="#090E17" stroke="#10B981" stroke-width="2"/>
+                    <text x="47" y="163" fill="#10B981" font-size="8" font-family="monospace">S</text>
+                    <circle cx="120" cy="130" r="5" fill="#090E17" stroke="#10B981" stroke-width="2"/>
+                    <circle cx="190" cy="90" r="5" fill="#090E17" stroke="#10B981" stroke-width="2"/>
+                    <circle cx="250" cy="50" r="5" fill="#090E17" stroke="#10B981" stroke-width="2"/>
+                    <circle cx="300" cy="40" r="5" fill="#090E17" stroke="#10B981" stroke-width="2"/>
+                </svg>
+                <div style="position: absolute; top: 12px; right: 12px;" class="status-text live">● LIVE</div>
+                <div class="map-footer-text" id="mapa-ia-footer">Monterrey Centro · 18.2 km · Cluster Activo</div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- BANNER DE MEJORA EN VIVO -->
+    <div class="banner-mejora">
+        <div class="mejora-title">MEJORA<br>IA VS BASELINE</div>
+        <div class="mejora-stats">
+            <div class="stat-item">Ganancia <strong id="mejora-ganancia">+81.25%</strong></div>
+            <div class="stat-item">Distancia <strong id="mejora-distancia">-26%</strong></div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="mejora-bar"></div>
+            </div>
+            <span style="color: var(--text-secondary);" id="mejora-porcentaje">81%</span>
+        </div>
+    </div>
+
+    <!-- PANEL INFERIOR -->
+    <section class="bottom-grid">
+
+        <!-- BLOQUE EXPLICABILIDAD LLM -->
+        <div class="column-card">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 1.2rem;">🤖</span>
+                <h3>Explicabilidad Contextual <span style="font-family: 'JetBrains Mono'; font-size: 0.8rem; color: var(--text-muted); font-weight: normal;">(Gemini LLM)</span></h3>
+            </div>
+
+            <div class="exp-box">
+                <span class="exp-tag">DECISIÓN PRINCIPAL</span>
+                <p class="exp-text" id="llm-explicacion">
+                    Presiona "Iniciar Simulación" para ejecutar los agentes y generar la explicación con Gemini LLM.
+                </p>
+            </div>
+
+            <div class="lists-container">
+                <div class="list-card">
+                    <h4>PEDIDOS ACEPTADOS</h4>
+                    <div id="lista-aceptados">
+                        <div class="list-item"><span class="dot-green">●</span> Esperando simulación...</div>
+                    </div>
+                </div>
+                <div class="list-card">
+                    <h4>PEDIDOS RECHAZADOS</h4>
+                    <div id="lista-rechazados">
+                        <div class="list-item"><span class="dot-red">●</span> Esperando simulación...</div>
+                    </div>
+                    <div style="font-family: 'JetBrains Mono'; font-size: 0.7rem; color: var(--text-muted); margin-top: 8px;" id="umbral-info">Umbral: > $3.5/min</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BLOQUE REGISTRO DE EVENTOS -->
+        <div class="column-card">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 1.2rem;">📋</span>
+                    <h3>Registro de Eventos</h3>
+                </div>
+                <div style="font-family: 'JetBrains Mono'; font-size: 0.75rem; color: var(--text-muted);">Eventos: <span style="color: var(--text-secondary);" id="eventos-contador">0</span></div>
+            </div>
+
+            <table class="table-eventos">
+                <thead>
+                    <tr>
+                        <th>HORA</th>
+                        <th>EVENTO</th>
+                        <th>ACCIÓN IA</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-eventos-body">
+                    <tr>
+                        <td colspan="3" style="text-align: center; color: var(--text-muted);">Sin eventos registrados</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="empty-footer" id="footer-status">
+                Inicia la simulación para ver eventos en tiempo real
+            </div>
+        </div>
+
+    </section>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const btnSimular = document.querySelector('.btn-simular');
+
+    function delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    btnSimular.addEventListener('click', async () => {
+        btnSimular.innerText = '⚡ Simulando en Tiempo Real...';
+        btnSimular.disabled = true;
+
+        const aiStatus = document.getElementById('ai-status');
+        aiStatus.innerText = '● EN PROCESO';
+
+        try {
+            const response = await fetch('/api/simular');
+            if (!response.ok) throw new Error('Error al conectar con la API');
+            
+            const data = await response.json();
+            const pasos = data.pasos || [];
+
+            // 1. Mostrar explicación inicial o preparar texto
+            if (data.umbral_ia) {
+                document.getElementById('umbral-info').innerText = `Umbral: > $${data.umbral_ia}/min`;
+            }
+
+            // 2. Iterar en tiempo real sobre cada paso
+            for (let i = 0; i < pasos.length; i++) {
+                const step = pasos[i];
+
+                // Actualizar métricas Baseline
+                document.getElementById('base-ganancia').innerText = `$${step.baseline.ganancia}`;
+                document.getElementById('base-hora').innerText = `$${step.baseline.ganancia_hora}`;
+                document.getElementById('base-distancia').innerText = `${step.baseline.distancia} km`;
+                document.getElementById('base-pedidos').innerText = `${step.baseline.pedidos} Pedidos`;
+                document.getElementById('mapa-base-footer').innerText = `Monterrey Centro · ${step.baseline.distancia} km acumulados`;
+
+                // Actualizar métricas IA
+                document.getElementById('ai-ganancia').innerText = `$${step.agente_ia.ganancia}`;
+                document.getElementById('ai-ratio').innerText = `$${step.agente_ia.ratio}/min`;
+                document.getElementById('ai-distancia').innerText = `${step.agente_ia.distancia} km`;
+                document.getElementById('ai-ahorro').innerText = `${step.agente_ia.ahorro}%`;
+                document.getElementById('mapa-ia-footer').innerText = `Procesando Pedido #${step.pedido_id} (${i+1}/${pasos.length})`;
+
+                // Banner de Mejora
+                document.getElementById('mejora-ganancia').innerText = step.mejora.ganancia_pct;
+                document.getElementById('mejora-distancia').innerText = step.mejora.distancia_pct;
+                document.getElementById('mejora-porcentaje').innerText = `${step.mejora.pct_num}%`;
+                document.getElementById('mejora-bar').style.width = `${step.mejora.pct_num}%`;
+
+                // Renderizar Listas de Aceptados/Rechazados progresivamente
+                document.getElementById('lista-aceptados').innerHTML = step.aceptados.length ? step.aceptados.map(p => 
+                    `<div class="list-item"><span class="dot-green">●</span> #${p.id} → $${p.ratio}/min</div>`
+                ).join('') : '<div class="list-item">Ninguno</div>';
+
+                document.getElementById('lista-rechazados').innerHTML = step.rechazados.length ? step.rechazados.map(p => 
+                    `<div class="list-item"><span class="dot-red">●</span> #${p.id} → $${p.ratio}/min</div>`
+                ).join('') : '<div class="list-item">Ninguno</div>';
+
+                // Renderizar Tabla de Eventos progresivamente
+                document.getElementById('tabla-eventos-body').innerHTML = step.eventos.map(e => `
+                    <tr>
+                        <td>${e.hora}</td>
+                        <td>${e.evento}</td>
+                        <td class="${e.clase}">${e.accion}</td>
+                    </tr>
+                `).join('');
+                document.getElementById('eventos-contador').innerText = `${step.eventos.length} eventos`;
+
+                // Pausa de 1.2 segundos para simular el paso del tiempo real
+                await delay(1200);
+            }
+
+            // 3. Al finalizar todos los pasos, mostrar la explicación LLM final
+            if (data.explicacion_llm) {
+                document.getElementById('llm-explicacion').innerText = data.explicacion_llm;
+            }
+
+            btnSimular.innerText = '↺ Reiniciar Simulación';
+            aiStatus.innerText = '● COMPLETADO';
+            document.getElementById('footer-status').innerText = 'Simulación completada en tiempo real.';
+
+        } catch (error) {
+            console.error('Error al simular:', error);
+            btnSimular.innerText = '▶ Reintentar';
+            aiStatus.innerText = '● ERROR';
+        } finally {
+            btnSimular.disabled = false;
+        }
+    });
+});
+</script>
+
+</body>
+</html>

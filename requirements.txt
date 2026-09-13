@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+google-genai
+osmnx
+networkx
+folium
+pandas
+streamlit
+streamlit-folium

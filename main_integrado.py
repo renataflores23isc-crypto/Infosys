@@ -1,7 +1,11 @@
 import json
 import os
-from agente_rutas import AgenteBaseline, AgenteIA
-from explicabilidad_llm import GeneradorExplicabilidad
+from pathlib import Path
+from src.agente_rutas import AgenteBaseline, AgenteIA
+from src.explicabilidad_llm import GeneradorExplicabilidad
+
+BASE_DIR = Path(__file__).resolve().parent
+DATA_DIR = BASE_DIR / "data"
 
 def cargar_pedidos(nombre_archivo):
     """Carga los archivos JSON generados por la Persona 2."""
@@ -17,8 +21,8 @@ def ejecutar_simulacion():
     print("==================================================================\n")
 
     # 1. Cargar datasets (Persona 2)
-    pedidos_estandar = cargar_pedidos('pedidos_monterrey.json')
-    pedidos_pico = cargar_pedidos('evento_pico_demanda.json')
+    pedidos_estandar = cargar_pedidos(DATA_DIR / 'pedidos_monterrey.json')
+    pedidos_pico = cargar_pedidos(DATA_DIR / 'evento_pico_demanda.json')
     
     # Combinar o seleccionar pedidos
     pedidos_totales = pedidos_estandar + pedidos_pico[:5]  # Ejemplo de mezcla de eventos

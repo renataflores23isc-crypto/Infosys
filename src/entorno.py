@@ -16,6 +16,9 @@ ox.plot_graph(grafo)
 
 import json
 import random
+from pathlib import Path
+
+DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
 pedidos = []
 
@@ -33,7 +36,7 @@ for i in range(1, 11):
     pedidos.append(pedido)
 
 # Crear el archivo JSON
-with open('pedidos_monterrey.json', 'w') as archivo:
+with open(DATA_DIR / 'pedidos_monterrey.json', 'w') as archivo:
     json.dump(pedidos, archivo, indent=4)
 
 print("¡Éxito! El archivo 'pedidos_monterrey.json' se ha creado.")
@@ -95,7 +98,7 @@ for i in range(1, 21):
     pedidos_pico.append(pedido)
 
 # Exportamos este evento especial a otro JSON
-with open('evento_pico_demanda.json', 'w') as archivo:
+with open(DATA_DIR / 'evento_pico_demanda.json', 'w') as archivo:
     json.dump(pedidos_pico, archivo, indent=4)
 
 print("¡Archivo 'evento_pico_demanda.json' generado!")
